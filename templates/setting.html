@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Binance Auto Trading 설정</h3>
+<form id="setting">
+  투자 금액(%): <input type="number" name="trade_amount_percent" value="{{arg['trade_amount_percent']}}"><br>
+  레버리지: <input type="number" name="leverage" value="{{arg['leverage']}}"><br>
+  익절(%): <input type="number" name="take_profit_percent" value="{{arg['take_profit_percent']}}"><br>
+  손절(%): <input type="number" name="stop_loss_percent" value="{{arg['stop_loss_percent']}}"><br>
+  최대 보유시간(분): <input type="number" name="max_holding_minutes" value="{{arg['max_holding_minutes']}}"><br>
+  모드:
+  <select name="mode">
+    <option value="simulation" {% if arg['mode']=='simulation' %}selected{% endif %}>시뮬레이션</option>
+    <option value="live" {% if arg['mode']=='live' %}selected{% endif %}>실거래</option>
+  </select><br>
+  Telegram API Key: <input type="text" name="telegram_api_key" value="{{arg['telegram_api_key']}}"><br>
+  Telegram Chat ID: <input type="text" name="telegram_chat_id" value="{{arg['telegram_chat_id']}}"><br>
+  <button id="save_btn">설정 저장

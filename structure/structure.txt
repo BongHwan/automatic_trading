@@ -1,0 +1,15 @@
+binance_auto_trading/
+├─ __init__.py
+├─ plugin.py
+├─ logic.py
+├─ logic_normal.py
+├─ model.py
+├─ notifier.py             # Telegram 알림
+├─ templates/
+│  ├─ setting.html
+│  ├─ history.html
+│  ├─ manual.html
+│  └─ log.html
+├─ static/
+│  └─ style.css
+└─ info.json

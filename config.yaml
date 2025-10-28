@@ -1,0 +1,32 @@
+# 자동매매 모드
+TRADING_MODE: SIMULATION   # REAL / SIMULATION
+POSITION_RATIO: 0.1        # 포지션 진입 금액 비율
+LEVERAGE: 3                # 레버리지
+
+# 전략 관련
+STOP_LOSS: 2.0             # 손절 %
+TAKE_PROFIT: 3.0           # 익절 %
+MAX_HOLD_SECONDS: 3600     # 최대 보유시간 (초)
+STRATEGY_PRIORITY: "TRIGGER" # TRIGGER / BOUNCE / BOTH
+
+# Telegram 알림
+TELEGRAM:
+  ENABLED: true
+  BOT_TOKEN: "123456789:ABCDEF-ghijklmnopQRSTuvwxYZ"
+  CHAT_ID: "987654321"
+  EVENTS:
+    - ENTRY
+    - EXIT
+    - STOPLOSS
+    - TAKEPROFIT
+    - TIMEOUT
+
+# PostgreSQL DB 설정
+POSTGRES:
+  HOST: "localhost"
+  PORT: 5432
+  USER: "postgres"
+  PASSWORD: "password"
+  DB: "auto_trader"
+  TRADE_TABLE: "trade_history"
+  LOG_TABLE: "system_log"
