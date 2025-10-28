@@ -16,10 +16,10 @@ setting = {
                 'uri': 'basic/setting',  # 설정 화면 URI
                 'name': '설정',
             },
-            #{
-            #    'uri': 'core/history',  # 거래 히스토리 화면 URI
-            #    'name': '거래 기록',
-            #},
+            {
+                'uri': 'basic/history',  # 거래 히스토리 화면 URI
+                'name': '거래 기록',
+            },
             {
                 'uri': 'manual',
                 'name': '매뉴얼',
@@ -47,4 +47,5 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
 
