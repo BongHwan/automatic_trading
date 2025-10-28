@@ -1,7 +1,8 @@
-title: "automatic_trading"
+title: "automatictrading"
 version: "1.0.0"
-package_name: "automatic_trading"
+package_name: "automatictrading"
 developer: "CT_B"
 description: "바이낸스 자동매매"
-home: "https://github.com/BongHwan/automatic_trading"
-more: "https://raw.githubusercontent.com/BongHwan/automatic_trading/main/README.md"
+home: "https://github.com/BongHwan/automatictrading"
+more: "https://raw.githubusercontent.com/BongHwan/automatictrading/main/README.md"
+
