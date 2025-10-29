@@ -3,7 +3,7 @@ __menu = {
     'name': '자동 트레이딩',
     'list': [
         {
-            'uri': 'setting',
+            'uri': 'main',
             'name': 'Main',
         },
         {
@@ -30,6 +30,7 @@ P = create_plugin_instance(setting)
 from .mod_main import ModuleMain
 
 P.set_module_list([ModuleMain])
+
 
 
 
