@@ -3,8 +3,8 @@ __menu = {
     'name': '자동 트레이딩',
     'list': [
         {
-            'uri': 'main',
-            'name': 'Main',
+            'uri': 'setting',
+            'name': '설정',
         },
         {
              'uri': 'monitoring',
@@ -44,3 +44,4 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
