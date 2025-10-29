@@ -35,7 +35,7 @@ class ModuleBasic(PluginModuleBase):
 
     def process_menu(self, sub, req):
         arg = P.ModelSetting.to_dict()
-        return render_template(f'{P.package_name}_{self.name}_{sub}.html', arg=arg)
+        return render_template(f'{P.package_name}_{sub}.html', arg=arg)
 
     def process_command(self, command, arg1, arg2, arg3, req):
         ret = {'ret': 'success'}
@@ -70,3 +70,4 @@ class ModuleBasic(PluginModuleBase):
         except Exception as e:
             P.logger.error(f'Exception:{str(e)}')
             P.logger.error(traceback.format_exc())
+
