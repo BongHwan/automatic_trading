@@ -53,7 +53,7 @@ class ModuleBasic(PluginModuleBase):
             result = engine.execute_trade()
             msg = f"자동 트레이딩 실행 결과\n{result}"
 
-            # Telegram 알림
+            # Telegram 전송
             send_telegram_message(msg)
 
         except Exception as e:
