@@ -3,7 +3,7 @@ from .setup import *
 class ModuleMain(PluginModuleBase):
 
     def __init__(self, P):
-        super(ModuleBasic, self).__init__(P, name='main', first_menu='setting', scheduler_desc="코인 자동 매매")
+        super(ModuleMain, self).__init__(P, name='main', first_menu='setting', scheduler_desc="코인 자동 매매")
         self.db_default = {
             f'db_version': '1',
             f'{self.name}_auto_start': 'False',
@@ -42,4 +42,5 @@ class ModuleMain(PluginModuleBase):
         SocketIO로 현재 더미 데이터를 화면으로 전송
         """
         F.socketio.emit("status", self.trade_data, namespace=f'/{P.package_name}/{self.name}')
+
 
