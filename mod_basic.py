@@ -8,7 +8,7 @@ from .notifier import send_telegram_message
 class ModuleBasic(PluginModuleBase):
 
     def __init__(self, P):
-        super().__init__(P, name='basic', first_menu='setting', scheduler_desc="자동 트레이딩")
+        super(ModuleBasic, self).__init__(P, name='basic', first_menu='setting', scheduler_desc="자동 트레이딩")
         self.db_default = {
             f'db_version': '1',
             f'{self.name}_auto_start': 'False',
@@ -70,3 +70,4 @@ class ModuleBasic(PluginModuleBase):
         except Exception as e:
             P.logger.error(f'Exception:{str(e)}')
             P.logger.error(traceback.format_exc())
+
