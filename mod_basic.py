@@ -61,13 +61,17 @@ class ModuleBasic(PluginModuleBase):
             engine = TradingEngine(P)
             result = engine.execute_trade()
             msg = f"자동 트레이딩 실행 결과\n{result}"
-            
+
+            telegram_enabled = P.ModelSetting.get_bool('telegram_enabled')  # bool 형태로 가져오기
             telegram_key = P.ModelSetting.get('telegram_api_key')
             telegram_chat = P.ModelSetting.get('telegram_chat_id')
-            if telegram_key and telegram_chat:
+            if telegram_enabled and telegram_key and telegram_chat:
                 ToolNotify.send_message(msg, 'trading', api_key=telegram_key, chat_id=telegram_chat)
+            else:
+                P.logger.debug("Telegram 알림 비활성화 상태거나 설정값이 없습니다. 메시지를 전송하지 않습니다.")
 
         except Exception as e:
             P.logger.error(f'Exception:{str(e)}')
             P.logger.error(traceback.format_exc())
+
 
