@@ -1,14 +1,17 @@
+# mod_basic.py
 import traceback, os, time
 from flask import render_template, jsonify
 from plugin import PluginModuleBase
 from .setup import *
 from .trading_engine import TradingEngine
 from .notifier import send_telegram_message
+from .model import ModelSetting
 
 class ModuleBasic(PluginModuleBase):
 
     def __init__(self, P):
-        super(ModuleBasic, self).__init__(P, name='basic', first_menu='setting', scheduler_desc="자동 트레이딩")
+        super().__init__(P, name='basic', first_menu='setting', scheduler_desc="자동 트레이딩")
+        
         self.db_default = {
             'db_version': '1',
             f'{self.name}_auto_start': 'False',
@@ -26,6 +29,10 @@ class ModuleBasic(PluginModuleBase):
 
     def process_menu(self, sub, req):
         arg = P.ModelSetting.to_dict()
+        if sub == 'setting':
+            # Lotto 모듈처럼 스케줄러 상태 확인
+            arg['is_include'] = F.scheduler.is_include(self.get_scheduler_name()) if 'F' in globals() else False
+            arg['is_running'] = F.scheduler.is_running(self.get_scheduler_name()) if 'F' in globals() else False
         return render_template(f'{P.package_name}_{self.name}_{sub}.html', arg=arg)
 
     def process_command(self, command, arg1, arg2, arg3, req):
@@ -59,4 +66,3 @@ class ModuleBasic(PluginModuleBase):
         except Exception as e:
             P.logger.error(f'Exception:{str(e)}')
             P.logger.error(traceback.format_exc())
-
