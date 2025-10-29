@@ -14,9 +14,13 @@ class ModuleMain(PluginModuleBase):
             "account": {"balance": 1000000, "equity": 1000000}
         }
 
-    def process_menu(self, page, req):
-        # page: normal / log / 등 추후 UI 확장 가능
-        return render_template(f'{__package__}_{name}.html', arg=self.trade_data)
+    def process_menu(self, sub, req):
+        _ = req
+        try:
+            arg = ModelSetting.to_dict()
+            return render_template(f"{package_name}_{sub}.html", arg=arg)
+        except Exception:
+            return render_template("sample.html", title=f"{package_name} - {sub}")
         
     def process_command(self, command, arg1, arg2, arg3, req):
         # 기능 구현 없이 화면/소켓 테스트용
@@ -35,3 +39,4 @@ class ModuleMain(PluginModuleBase):
     def send_data(self):
         # SocketIO로 화면 전송
         F.socketio.emit("status", self.trade_data, namespace=f'/{P.package_name}/{name}')
+
