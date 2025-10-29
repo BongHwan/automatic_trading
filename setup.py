@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import traceback
-from plugin import *
 
 # 플러그인 메뉴 설정
 setting = {
@@ -47,6 +46,7 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
 
 
 
