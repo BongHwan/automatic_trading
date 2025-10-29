@@ -20,7 +20,7 @@ setting = {
         ]
     },
     'setting_menu': None,
-    'default_route': 'setting',
+    'default_route': 'normal',
 }
 
 P = create_plugin_instance(setting)
@@ -34,4 +34,5 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
 
