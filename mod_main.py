@@ -1,36 +1,43 @@
-from .setup import *
+import subprocess
 
-name = 'main'
+# third-party
+from flask import render_template, jsonify
+
+# pylint: disable=import-error
+from plugin import PluginModuleBase
+
+from .setup import P
+
+plugin = P
+logger = plugin.logger
+package_name = plugin.package_name
+ModelSetting = plugin.ModelSetting
+plugin_info = plugin.plugin_info
 
 class ModuleMain(PluginModuleBase):
 
-    def __init__(self, P):
-        super(ModuleMain, self).__init__(P, name=name)
-        default_route_socketio_module(self)
+    db_default = {
+        "default_interface_id": "",
+        "default_traffic_view": "months",
+        "traffic_unit": "iec",
+        "traffic_list": "24,24,30,12,0,10",
+        "vnstat_bin": "vnstat",
+        "vnstat_dbdir": "",
+    }
 
-        # 화면/소켓용 더미 데이터
-        self.trade_data = {
-            "positions": [],
-            "orders": [],
-            "account": {"balance": 1000000, "equity": 1000000}
-        }
+    def __init__(self, PM):
+        super().__init__(PM, None)
+
+    def plugin_load(self):
+        pass
 
     def process_menu(self, sub, req):
-        # ✅ ModelSetting은 self.P.ModelSetting 으로 접근해야 함
-        arg = {}
-        if hasattr(self.P, "ModelSetting") and self.P.ModelSetting is not None:
-            arg = self.P.ModelSetting.to_dict()
-
-        # sub가 None이면 기본 화면 설정
-        if sub is None or sub == "main":
-            sub = "setting"  # 기본 화면 파일 이름
-
-        # html 파일 렌더링
+        _ = req
         try:
-            return render_template(f"{self.P.package_name}_{self.name}_{sub}.html", arg=arg)
-        except Exception as e:
-            logger.error(f"HTML 렌더링 실패: {str(e)}")
-            return render_template("sample.html", title=f"{self.P.package_name} - {sub}")
+            arg = ModelSetting.to_dict()
+            return render_template(f"{package_name}_{sub}.html", arg=arg)
+        except Exception:
+            return render_template("sample.html", title=f"{package_name} - {sub}")
 
     def process_command(self, command, arg1=None, arg2=None, arg3=None, req=None):
         ret = {"ret": "success", "msg": ""}
@@ -45,3 +52,4 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{self.P.package_name}/{self.name}')
+
