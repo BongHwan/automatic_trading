@@ -1,11 +1,9 @@
 from .setup import *
 
-name = 'main'
-
 class ModuleMain(PluginModuleBase):
 
     def __init__(self, P):
-        super(ModuleMain, self).__init__(P, name=name)
+        super(ModuleMain, self).__init__(P, None)
         default_route_socketio_module(self)
         # 화면/소켓용 더미 데이터
         self.trade_data = {
@@ -22,7 +20,7 @@ def process_menu(self, page, req):
         page = "setting"  # 기본 화면 html 이름
 
     try:
-        return render_template(f'{self.P.package_name}_{self.name}_{page}.html', arg=arg)
+        return render_template(f'{self.P.package_name}_{page}.html', arg=arg)
     except Exception:
         return render_template("sample.html", title=f"{self.P.package_name} - {page}")
   
@@ -40,5 +38,6 @@ def process_menu(self, page, req):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{P.package_name}/{name}')
+
 
 
