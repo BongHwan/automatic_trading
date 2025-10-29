@@ -14,8 +14,20 @@ class ModuleMain(PluginModuleBase):
             "account": {"balance": 1000000, "equity": 1000000}
         }
 
-    def process_menu(self, sub, req):        
-        return render_template(f'{__package__}_{sub}.html', arg={})        
+def process_menu(self, sub, req):
+    arg = ModelSetting.to_dict()
+
+    # sub가 None이면 기본 화면 설정
+    if sub is None or sub == "main":
+        sub = "setting"  # 기본 화면 파일 이름
+
+    # html 파일 렌더링
+    try:
+        return render_template(f"{__package__}_{sub}.html", arg=arg)
+    except Exception:
+        # 없으면 기본 샘플 페이지
+        return render_template("sample.html", title=f"{__package__} - {sub}")
+   
 
     def process_command(self, command, arg1, arg2, arg3, req):
         ret = {"ret": "success", "msg": ""}
@@ -30,3 +42,4 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{P.package_name}/{name}')
+
