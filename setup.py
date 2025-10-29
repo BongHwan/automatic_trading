@@ -13,11 +13,11 @@ setting = {
         'name': '자동 트레이딩',  # 플러그인 이름
         'list': [
             {
-                'uri': 'basic/setting',  # 설정 화면 URI
+                'uri': 'setting',  # 설정 화면 URI
                 'name': '설정',
             },
             {
-                'uri': 'basic/history',  # 거래 히스토리 화면 URI
+                'uri': 'history',  # 거래 히스토리 화면 URI
                 'name': '거래 기록',
             },
             {
@@ -34,7 +34,7 @@ setting = {
         ]
     },
     'setting_menu': None,
-    'default_route': 'normal',
+    'default_route': 'setting',
 }
 
 from plugin import *
@@ -47,5 +47,6 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
 
 
