@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import traceback
 from plugin import *
+from .config_loader import load_config
 
 # 플러그인 메뉴 설정
 setting = {
@@ -23,6 +24,9 @@ setting = {
 }
 
 P = create_plugin_instance(setting)
+
+# config.yaml 로드
+load_config()
 
 try:
     from .mod_basic import ModuleBasic
