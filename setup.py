@@ -15,7 +15,7 @@ __menu = {
 
 setting = {
     'filepath' : __file__,
-    'use_db': False,
+    'use_db': True,
     'use_default_setting': False,
     'home_module': None,
     'menu': __menu,
@@ -30,6 +30,7 @@ P = create_plugin_instance(setting)
 from .mod_main import ModuleMain
 
 P.set_module_list([ModuleMain])
+
 
 
 
