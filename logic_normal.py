@@ -8,10 +8,7 @@ class LogicNormal:
 
     @staticmethod
     def execute_trade(symbol, side, amount, leverage, price):
-        """
-        실거래 또는 시뮬레이션 실행
-        """
-        mode = ModelSetting.get('mode')
+        mode = ModelSetting.get('basic_mode')
         record = {
             'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'symbol': symbol,
@@ -26,7 +23,6 @@ class LogicNormal:
 
     @staticmethod
     def get_history():
-        # 24시간 기록
         now = datetime.datetime.now()
         last_24h = [h for h in history_db if datetime.datetime.strptime(h['time'], "%Y-%m-%d %H:%M:%S") > now - datetime.timedelta(hours=24)]
         return last_24h
