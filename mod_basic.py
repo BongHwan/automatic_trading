@@ -1,74 +1,168 @@
-import traceback, os, time
-from flask import render_template, jsonify
-from plugin import PluginModuleBase
 from .setup import *
-from .trading_engine import TradingEngine
-from .notifier import send_telegram_message
 
-class ModuleBasic(PluginModuleBase):
+name = 'main'
 
+class ModuleMain(PluginModuleBase):
+    
     def __init__(self, P):
-        super(ModuleBasic, self).__init__(P, name='basic', first_menu='setting', scheduler_desc="자동 트레이딩")
-        self.db_default = {
-            f'db_version': '1',
-            f'{self.name}_auto_start': 'False',
-            f'{self.name}_interval': '0 */1 * * *',
-            f'{self.name}_trade_amount_percent': 10,
-            f'{self.name}_leverage': 1,
-            f'{self.name}_take_profit_percent': 1,
-            f'{self.name}_stop_loss_percent': 1,
-            f'{self.name}_max_holding_minutes': 60,
-            f'{self.name}_mode': 'simulation',
-            f'{self.name}_telegram_enabled': False,
-            f'{self.name}_telegram_api_key': '',
-            f'{self.name}_telegram_chat_id': '',
-        }
+        super(ModuleMain, self).__init__(P, name=name)
+        default_route_socketio_module(self)
+        self.baseball = NumberBaseball(4,3)
 
-    def process_menu(self, sub, req):
-        arg = P.ModelSetting.to_dict()
-        if sub == 'setting':
-            # 스케줄러 상태
-            arg['is_include'] = F.scheduler.is_include(self.get_scheduler_name())
-            arg['is_running'] = F.scheduler.is_running(self.get_scheduler_name())
-        return render_template(f'{P.package_name}_{self.name}_{sub}.html', arg=arg)
 
+    def process_menu(self, page, req):
+        return render_template(f'{__package__}_{name}.html', arg={})
+        
     def process_command(self, command, arg1, arg2, arg3, req):
-        ret = {'ret': 'success'}
-        try:
-            engine = TradingEngine(P)
-            if command == 'test_trade':
-                result = engine.test_trade()
-                ret['data'] = result
-                ret['modal'] = f"시뮬레이션 결과: {result}"
-                ret['title'] = '테스트'
-            elif command == 'execute_trade':
-                result = engine.execute_trade()
-                ret['data'] = result
-                ret['modal'] = f"실행 결과: {result}"
-                ret['title'] = '실행'
-        except Exception as e:
-            ret['ret'] = 'fail'
-            ret['modal'] = str(e)
-            ret['title'] = '에러'
-            P.logger.error(f'Exception:{str(e)}')
-            P.logger.error(traceback.format_exc())
-        return jsonify(ret)
+        if command == 'start':
+            self.baseball = NumberBaseball(int(arg1), int(arg2))
+            self.send_data()
+            return jsonify({"msg":f"초기화 하였습니다.<br>내 숫자 : {self.baseball.answer}", "ret":"success"})
+        elif command == 'input_question':
+            if self.baseball.check_only_one(arg1) == False:
+                return jsonify({"msg":f"중복 숫자가 있습니다.<br>숫자 : {arg1}", "ret":"danger"})
 
-    def scheduler_function(self):
-        try:
-            auto_start = P.ModelSetting.get_bool(f'{self.name}_auto_start')
-            if not auto_start:
-                return
+            self.baseball.input_question_result(int(arg1), int(arg2), int(arg3))
+            self.send_data()
+        elif command == 'input_answser':
+            if self.baseball.check_only_one(arg1) == False:
+                return jsonify({"msg":f"중복 숫자가 있습니다.<br>숫자 : {arg1}", "ret":"danger"})
 
-            engine = TradingEngine(P)
-            result = engine.execute_trade()
-            msg = f"자동 트레이딩 실행 결과\n{result}"
+            self.baseball.input_answer_data(int(arg1))
+            self.send_data()
+        elif command == 'remove_data':
+            if arg1 == 'question':
+                self.baseball.input_remove_data(arg1, arg2)
+                self.send_data()
+        return jsonify('')
 
-            # Telegram 전송
-            send_telegram_message(msg)
-
-        except Exception as e:
-            P.logger.error(f'Exception:{str(e)}')
-            P.logger.error(traceback.format_exc())
+    def socketio_connect(self):
+        self.send_data()
+    
+    def send_data(self):
+        F.socketio.emit("status", self.baseball.get_status(), namespace=f'/{P.package_name}/{name}')
 
 
+
+import copy
+import math
+from random import randint
+
+
+class NumberBaseball:
+
+    def __init__(self, question_len, answer_len):
+        self.question_len = question_len
+        self.answer_len = answer_len
+        self.answer = self.random_answer()
+        self.question_data = []
+        self.answer_data = []
+
+    def input_question_result(self, *args):
+        self.question_data.append([args[0], args[1], args[2]])
+        ret = self.check(self.question_len, self.question_data)
+        self.question_data[-1].append(ret)
+        self.question_data[-1].append(self.make_info(ret))
+
+    def input_remove_data(self, mode, index):
+        if mode == 'question':
+            copy_data = copy.deepcopy(self.question_data)
+            self.question_data = []
+            for idx, item in enumerate(copy_data):
+                if idx != int(index):
+                    self.input_question_result(*item)
+        else:
+            copy_data = copy.deepcopy(self.answer_data)
+            self.answer_data = []
+            for idx, item in enumerate(copy_data):
+                if idx != int(index):
+                    self.input_answer_data(*item)
+           
+    def make_info(self, ret):
+        if len(ret) == 0: return []
+        data = []
+        for i in range(0, len(str(ret[0]))):
+            tmp = []
+            for _ in ret:
+                if str(_)[i] not in tmp:
+                    tmp.append(str(_)[i])
+            data.append(sorted(tmp))
+        return data
+
+
+
+    def get_status(self):
+        ret = {}
+        ret['answer'] = self.answer
+        ret['question_data'] = self.question_data
+        ret['question_result'] = self.check(self.question_len, self.question_data)
+        ret['answer_data'] = self.answer_data
+        ret['answer_result'] = self.check(self.answer_len, self.answer_data)
+        return ret
+        
+
+    def random_answer(self):
+        start_number = int(math.pow(10, (self.answer_len-1)))
+        last_number = int(math.pow(10, self.answer_len)-1)
+
+        while True:
+            number = randint(start_number, last_number)
+            if self.check_only_one(str(number)):
+                return number
+
+    
+
+    def input_answer_data(self, number):
+        strike = 0
+        ball = 0
+        self.answer = str(self.answer)
+        number = str(number)
+        for i  in range(0,len(self.answer)):
+            for j in range(0,len(self.answer)):
+                if self.answer[i] == number[j]:
+                    if i == j:
+                        strike += 1
+                    else:
+                        ball += 1
+        self.answer_data.append([int(number), strike, ball])
+        ret = self.check(self.answer_len, self.answer_data)
+        self.answer_data[-1].append(ret)
+        self.answer_data[-1].append(self.make_info(ret))
+
+    def check_only_one(self, number_str):
+        tmp = [number_str[0]]
+        for i in range(1, len(number_str)):
+            if number_str[i] not in tmp:
+                tmp.append(number_str[i])
+            else:
+                return False
+        return True
+
+
+    def check(self, length, data):
+        ret = []
+        start_number = int(math.pow(10, (length-1)))
+        last_number = int(math.pow(10, length)-1)
+
+        for i in range(start_number, last_number):
+            if self.check_only_one(str(i)):
+                if self.available(str(i), data):
+                    ret.append(i)
+        return ret
+
+
+    def available(self, value, data):
+        for item in data:
+            number = str(item[0])
+            strike = 0
+            ball = 0
+            for idx, no in enumerate(value):
+                if no == number[idx]:
+                    strike += 1
+                elif no in number:
+                    ball += 1
+            if str(strike) == str(item[1]) and str(ball) == str(item[2]):
+                continue
+            else:
+                return False
+        return True
