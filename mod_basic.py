@@ -1,4 +1,3 @@
-# mod_basic.py
 import traceback, os, time
 from flask import render_template, jsonify
 from plugin import PluginModuleBase
