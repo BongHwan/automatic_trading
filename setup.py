@@ -27,7 +27,7 @@ __menu = {
 setting = {
     'filepath' : __file__,
     'use_db': True,
-    'use_default_setting': False,
+    'use_default_setting': True,
     'home_module': None,
     'menu': __menu,
     'setting_menu': None,
@@ -44,4 +44,5 @@ try:
 except Exception as e:
     P.logger.error(f'Exception:{str(e)}')
     P.logger.error(traceback.format_exc())
+
 
