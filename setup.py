@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-#import traceback
-#from plugin import *
-#from .config_loader import load_config
-
 __menu = {
     'uri': __package__,
     'name': '자동 트레이딩',
@@ -32,9 +27,10 @@ from plugin import *
 
 P = create_plugin_instance(setting)
 
-from .mod_basic import ModuleBasic
+from .mod_main import ModuleMain
 
-P.set_module_list([ModuleBasic])
+P.set_module_list([ModuleMain])
+
 
 
 
