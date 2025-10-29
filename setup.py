@@ -38,15 +38,9 @@ from plugin import *
 
 P = create_plugin_instance(setting)
 
-from .mod_main import ModuleMain
-
-P.set_module_list([ModuleMain])
-
-
-
-
-
-
-
-
-
+try:
+    from .mod_main import ModuleMain
+    P.set_module_list([ModuleMain])
+except Exception as e:
+    P.logger.error(f'Exception:{str(e)}')
+    P.logger.error(traceback.format_exc())
