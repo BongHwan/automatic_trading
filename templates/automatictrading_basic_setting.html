@@ -1,107 +1,89 @@
-<!-- automatictrading_setting.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>자동 트레이딩 설정</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <h2>자동 트레이딩 설정</h2>
+{% extends "base.html" %}
+{% block content %}
 
-    <form id="settings-form">
-        <label>
-            자동 실행:
-            <input type="checkbox" name="basic_auto_start" {% if arg.basic_auto_start == 'True' %}checked{% endif %}>
-        </label>
-        <br>
+{{ macros.m_button_group([['globalSettingSaveBtn', '설정 저장'], ['globalOneExecuteBtn', '1회 실행'], ['globalImmediatelyExecuteBtn', '즉시 실행']])}}
+{{ macros.m_row_start('5') }}
+{{ macros.m_row_end() }}
 
-        <label>
-            실행 간격 (cron):
-            <input type="text" name="basic_interval" value="{{ arg.basic_interval }}">
-        </label>
-        <br>
+<nav>
+  {{ macros.m_tab_head_start() }}
+    {{ macros.m_tab_head('normal', '기본', true) }}
+    {{ macros.m_tab_head('auto', '자동', false) }}
+    {{ macros.m_tab_head('db', 'DB', false) }}
+  {{ macros.m_tab_head_end() }}
+</nav>
 
-        <label>
-            거래 금액 비율 (%):
-            <input type="number" name="basic_trade_amount_percent" value="{{ arg.basic_trade_amount_percent }}">
-        </label>
-        <br>
+<form id='setting'>
+  <div class="tab-content" id="nav-tabContent">
 
-        <label>
-            레버리지:
-            <input type="number" name="basic_leverage" value="{{ arg.basic_leverage }}">
-        </label>
-        <br>
+    <!-- 기본 설정 탭 -->
+    {{ macros.m_tab_content_start('normal', true) }}
+      {{ macros.setting_input_text('trade_amount_percent', '포지션 비율 (%)', desc=None, value=arg['trade_amount_percent'], col=3) }}
+      {{ macros.setting_input_text('leverage', '레버리지', desc=None, value=arg['leverage'], col=3) }}
+      {{ macros.setting_input_text('stop_loss_percent', '손절 (%)', desc=None, value=arg['stop_loss_percent'], col=3) }}
+      {{ macros.setting_input_text('take_profit_percent', '익절 (%)', desc=None, value=arg['take_profit_percent'], col=3) }}
+      {{ macros.setting_input_text('max_holding_minutes', '최대 보유 시간 (분)', desc=None, value=arg['max_holding_minutes'], col=3) }}
+      {{ macros.setting_radio_with_value('mode', '모드', [['simulation', '시뮬레이션'], ['real', '실거래']], value=arg['mode']) }}
+      {{ macros.m_hr() }}
+      {{ macros.setting_checkbox('telegram_enabled', 'Telegram 알림 사용', value=arg['telegram_enabled'], desc=['활성화 시 설정된 채팅으로 메시지 전송']) }}
+      {{ macros.setting_input_text('telegram_api_key', 'Telegram BOT 토큰', desc=None, value=arg['telegram_api_key'], col=6) }}
+      {{ macros.setting_input_text('telegram_chat_id', 'Telegram 채팅 ID', desc=None, value=arg['telegram_chat_id'], col=6) }}
+    {{ macros.m_tab_content_end() }}
 
-        <label>
-            익절 %:
-            <input type="number" name="basic_take_profit_percent" value="{{ arg.basic_take_profit_percent }}">
-        </label>
-        <br>
+    <!-- 자동 스케줄 탭 -->
+    {{ macros.m_tab_content_start('auto', false) }}
+      {{ macros.global_setting_scheduler_button(arg['is_include'], arg['is_running']) }}
+      {{ macros.setting_input_text('basic_interval', '스케줄 실행 주기', value=arg['basic_interval'], col=3, desc=['분 단위 또는 Cron 형식']) }}
+      {{ macros.setting_checkbox('basic_auto_start', '시작시 자동 실행', value=arg['basic_auto_start'], desc=['On: 플러그인 시작 시 자동 등록']) }}
+    {{ macros.m_tab_content_end() }}
 
-        <label>
-            손절 %:
-            <input type="number" name="basic_stop_loss_percent" value="{{ arg.basic_stop_loss_percent }}">
-        </label>
-        <br>
+    <!-- DB 관리 탭 -->
+    {{ macros.m_tab_content_start('db', false) }}
+      {{ macros.setting_input_text_and_buttons('basic_db_delete_day', 'DB 삭제 기간(일)', [['globalDbDeleteDayBtn', '기간 적용 삭제', [['tag_id','basic_db_delete_day']]], ['globalDbDeleteBtn', '전체 삭제']], value=arg['basic_db_delete_day'], col='6') }}
+      {{ macros.setting_checkbox('basic_db_auto_delete', 'DB 자동 삭제', value=arg['basic_db_auto_delete'], desc=['On: 설정된 기간에 따라 DB 자동 삭제']) }}
+    {{ macros.m_tab_content_end() }}
 
-        <label>
-            최대 보유 시간 (분):
-            <input type="number" name="basic_max_holding_minutes" value="{{ arg.basic_max_holding_minutes }}">
-        </label>
-        <br>
+  </div>
+</form>
 
-        <label>
-            모드:
-            <select name="basic_mode">
-                <option value="simulation" {% if arg.basic_mode == 'simulation' %}selected{% endif %}>Simulation</option>
-                <option value="real" {% if arg.basic_mode == 'real' %}selected{% endif %}>Real</option>
-            </select>
-        </label>
-        <br>
+<script type="text/javascript">
 
-        <h3>Telegram 알림</h3>
-        <label>
-            활성화:
-            <input type="checkbox" name="basic_telegram_enabled" {% if arg.basic_telegram_enabled == 'True' %}checked{% endif %}>
-        </label>
-        <br>
+// 초기 설정: Telegram/자동 실행 등
+$(document).ready(function(){
+  // 필요시 초기 동작 설정
+});
 
-        <label>
-            BOT TOKEN:
-            <input type="text" name="basic_telegram_api_key" value="{{ arg.basic_telegram_api_key }}">
-        </label>
-        <br>
+// 탭 클릭 이벤트 처리
+$('input[type=radio][name=driver_mode]').change(function() {
+  set_driver_mode(this.value);
+});
 
-        <label>
-            CHAT ID:
-            <input type="text" name="basic_telegram_chat_id" value="{{ arg.basic_telegram_chat_id }}">
-        </label>
-        <br>
+function set_driver_mode(type) {
+  $('input[name=driver_mode][value="' + type + '"]').attr('checked', true);
+  if ( type == 'local') {
+    $('#local_div').collapse('show');
+    $('#remote_div').collapse('hide');
+  } else {
+    $('#local_div').collapse('hide');
+    $('#remote_div').collapse('show');
+  }
+}
 
-        <button type="button" id="save-settings">저장</button>
-        <button type="button" id="test-trade">테스트 트레이딩</button>
-    </form>
+// 테스트 버튼 이벤트 처리
+$("body").on('click', '#globalOneExecuteBtn', function(e){
+  e.preventDefault();
+  globalSendCommand('test_trade', null, null, null, function(ret) {
+    alert('1회 실행 완료');
+  });
+});
 
-    <div id="result"></div>
+$("body").on('click', '#globalImmediatelyExecuteBtn', function(e){
+  e.preventDefault();
+  globalSendCommand('test_trade', null, null, null, function(ret) {
+    alert('즉시 실행 완료');
+  });
+});
 
-    <script>
-        $(document).ready(function() {
-            // 저장
-            $("#save-settings").click(function() {
-                $.post("/plugins/automatictrading/basic/process_command", $("#settings-form").serialize() + "&command=save_settings", function(data) {
-                    $("#result").text(data.modal);
-                });
-            });
+</script>
 
-            // 테스트 트레이딩
-            $("#test-trade").click(function() {
-                $.post("/plugins/automatictrading/basic/process_command", {command: "test_trade"}, function(data) {
-                    $("#result").text(data.modal);
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
