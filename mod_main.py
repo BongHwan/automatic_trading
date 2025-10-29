@@ -1,12 +1,12 @@
 from .setup import *
 
+name = 'main'
+
 class ModuleMain(PluginModuleBase):
 
-    def __init__(self, P):
-        # 이름과 첫 화면 지정
-        super(ModuleMain, self).__init__(P, name='main', first_menu='setting')
+     def __init__(self, P):
+        super(ModuleMain, self).__init__(P, name=name)
         default_route_socketio_module(self)
-
         # 화면/소켓용 더미 데이터
         self.trade_data = {
             "positions": [],
@@ -14,22 +14,18 @@ class ModuleMain(PluginModuleBase):
             "account": {"balance": 1000000, "equity": 1000000}
         }
 
-    def process_menu(self, sub, req):
-        """
-        메뉴 화면 처리
-        sub: setting / monitoring / manual / log 등
-        req: Flask request 객체
-        """
-        arg = P.ModelSetting.to_dict()  # 설정값 전달
-        # 기본 화면 지정
-        if sub is None:
-            sub = "setting"
+    def process_menu(self, page, req):
+    arg = ModelSetting.to_dict()
 
-        try:
-            return render_template(f'{P.package_name}_{self.name}_{sub}.html', arg=arg)
-        except Exception:
-            # HTML이 없는 경우 기본 샘플 화면 표시
-            return render_template("sample.html", title=f"{P.package_name} - {sub}")
+    # page가 None이면 기본 페이지로 변경
+    if page is None:
+        page = "setting"  # 기본 화면 html 이름
+
+    try:
+        return render_template(f'{self.P.package_name}_{self.name}_{page}.html', arg=arg)
+    except Exception:
+        return render_template("sample.html", title=f"{self.P.package_name} - {page}")
+
 
     def process_command(self, command, arg1=None, arg2=None, arg3=None, req=None):
         """
@@ -53,3 +49,4 @@ class ModuleMain(PluginModuleBase):
         SocketIO로 현재 더미 데이터를 화면으로 전송
         """
         F.socketio.emit("status", self.trade_data, namespace=f'/{P.package_name}/{self.name}')
+
