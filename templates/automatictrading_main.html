@@ -1,75 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3>계좌 정보</h3>
-<div>
-  <p>Balance: <span id="balance">{{ arg.account.balance }}</span></p>
-  <p>Equity: <span id="equity">{{ arg.account.equity }}</span></p>
-</div>
-{{ macros.m_hr_black() }}
+{{ macros.m_button_group([['globalSettingSaveBtn', '설정 저장'], ['executeTradingBtn', '즉시 실행']]) }}
+{{ macros.m_row_start('5') }}
+{{ macros.m_row_end() }}
 
-<h3>주문 관리</h3>
-{{ macros.setting_input_text('order_symbol', '심볼') }}
-{{ macros.setting_input_int('order_qty', '수량') }}
-{{ macros.m_button_group([['add_order_btn', '주문 추가']])}}
-<div id="orders_div"></div>
-{{ macros.m_hr_black() }}
+<nav>
+  {{ macros.m_tab_head_start() }}
+    {{ macros.m_tab_head('basic', '기본', true) }}
+    {{ macros.m_tab_head('db', 'DB', false) }}
+  {{ macros.m_tab_head_end() }}
+</nav>
 
-<h3>포지션 현황</h3>
-<div id="positions_div"></div>
-{{ macros.m_hr_black() }}
+<form id='setting_form'>
+  <div class="tab-content" id="nav-tabContent">
+    {{ macros.m_tab_content_start('basic', true) }}
+      {{ macros.setting_input_text('api_key', 'API Key', desc='거래소 API Key', value=arg['api_key'], col=6) }}
+      {{ macros.setting_input_text('api_secret', 'API Secret', desc='거래소 API Secret', value=arg['api_secret'], col=6) }}
+      {{ macros.setting_input_int('trade_amount', '거래 기본 수량', value=arg['trade_amount'], col=3) }}
+      {{ macros.setting_radio_with_value('mode', '모드', [['simulation','시뮬레이션'],['live','실거래']], value=arg['mode'], desc=['시뮬레이션 모드 또는 실거래 모드 선택']) }}
+      {{ macros.m_hr() }}
+      {{ macros.setting_buttons([['test_connect_btn', '연결 테스트'], ['reset_btn','초기화']]) }}
+    {{ macros.m_tab_content_end() }}
+
+    {{ macros.m_tab_content_start('db', false) }}
+      {{ macros.setting_input_text_and_buttons('db_keep_days', 'DB 보관 기간(일)', [['applyDbBtn','적용']], value=arg['db_keep_days'], col=3) }}
+      {{ macros.setting_checkbox('db_auto_delete', 'DB 자동 삭제', value=arg['db_auto_delete'], desc=['On: 지정 기간 지난 데이터 자동 삭제']) }}
+    {{ macros.m_tab_content_end() }}
+  </div>
+</form>
 
 <script type="text/javascript">
-hideMenuModule();
-
-var current_data = {};
 
 $(document).ready(function(){
-  var socket = io.connect(window.location.href);
-  socket.on('status', function(data) {
-    current_data = data;
-    make_data(data);
-  });
+  // 기본 탭 활성화
+  showTab('basic');
 });
 
-$("body").on('click', '#add_order_btn', function(e){
+// 탭 클릭
+$('input[type=radio][name=driver_mode]').change(function() {
+  set_driver_mode(this.value);
+});
+
+// 버튼 이벤트
+$("body").on('click', '#globalSettingSaveBtn', function(e){
   e.preventDefault();
-  let symbol = $('#order_symbol').val();
-  let qty = $('#order_qty').val();
-  if(symbol && qty) {
-    globalSendCommand('dummy_update', symbol, qty);
-  }
+  globalSendCommand('save_settings', $('#setting_form').serialize());
 });
 
-function make_data(data) {
-  // 계좌 정보 업데이트
-  $('#balance').text(data.account.balance);
-  $('#equity').text(data.account.equity);
+$("body").on('click', '#executeTradingBtn', function(e){
+  e.preventDefault();
+  globalSendCommand('execute_trading');
+});
 
-  // 주문 정보 테이블
-  let orders_html = "<table class='table table-sm'><thead><tr><th>NO</th><th>심볼</th><th>수량</th></tr></thead><tbody>";
-  if(data.orders.length === 0) {
-    orders_html += "<tr><td colspan='3'>주문 없음</td></tr>";
-  } else {
-    for(let i=0;i<data.orders.length;i++){
-      orders_html += `<tr><td>${i+1}</td><td>${data.orders[i].symbol}</td><td>${data.orders[i].qty}</td></tr>`;
-    }
-  }
-  orders_html += "</tbody></table>";
-  $('#orders_div').html(orders_html);
-
-  // 포지션 정보 테이블
-  let pos_html = "<table class='table table-sm'><thead><tr><th>NO</th><th>심볼</th><th>수량</th></tr></thead><tbody>";
-  if(data.positions.length === 0) {
-    pos_html += "<tr><td colspan='3'>포지션 없음</td></tr>";
-  } else {
-    for(let i=0;i<data.positions.length;i++){
-      pos_html += `<tr><td>${i+1}</td><td>${data.positions[i].symbol}</td><td>${data.positions[i].qty}</td></tr>`;
-    }
-  }
-  pos_html += "</tbody></table>";
-  $('#positions_div').html(pos_html);
-}
 </script>
 
 {% endblock %}
