@@ -1,18 +1,8 @@
-import subprocess
+import base64
 
-# third-party
-from flask import render_template, jsonify
+from support import SupportSubprocess
 
-# pylint: disable=import-error
-from plugin import PluginModuleBase
-
-from .setup import P
-
-plugin = P
-logger = plugin.logger
-package_name = plugin.package_name
-ModelSetting = plugin.ModelSetting
-plugin_info = plugin.plugin_info
+from .setup import *
 
 class ModuleMain(PluginModuleBase):
 
@@ -51,6 +41,7 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{self.P.package_name}/{self.name}')
+
 
 
 
