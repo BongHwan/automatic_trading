@@ -6,8 +6,7 @@ __menu = {
             'uri': 'main',
             'name': '메인',
             'list': [
-                    {'uri': 'setting', 'name': '설정'},
-                    {'uri': 'monitoring', 'name': '모니터링'},
+                    {'uri': 'setting', 'name': '설정'},                    
                 ]
         },
         {
@@ -46,3 +45,4 @@ except Exception as e:
     P.logger.error(traceback.format_exc())
 
 logger = P.logger
+
