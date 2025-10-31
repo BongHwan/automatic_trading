@@ -26,8 +26,16 @@ class ModuleMain(PluginModuleBase):
     }
 
     def __init__(self, PM):
-        super().__init__(PM, None)
+        super(ModuleMain, self).__init__(PM, name='main', first_menu='setting', scheduler_desc='코인자동매매')
 
+    def process_menu(self, sub, req):
+        arg = P.ModelSetting.to_dict()
+        if sub == 'setting':
+            arg['_status'] = self.process != None
+        return render_template('{package_name}_{module_name}_{sub}.html'.format(package_name=P.package_name, module_name=self.name, sub=sub), arg=arg)
+        except Exception:
+            return render_template("sample.html", title=f"{package_name} - {sub}")
+            
     def plugin_load(self):
         pass
 
@@ -39,12 +47,13 @@ class ModuleMain(PluginModuleBase):
         except Exception:
             return render_template("sample.html", title=f"{package_name} - {sub}")
 
-    def process_command(self, command, arg1=None, arg2=None, arg3=None, req=None):
-        ret = {"ret": "success", "msg": ""}
-        if command == "dummy_update":
-            self.trade_data["orders"].append({"symbol": arg1, "qty": arg2})
-            ret["msg"] = f"주문 추가됨: {arg1}, 수량: {arg2}"
-            self.send_data()
+    def process_command(self, command, arg1, arg2, arg3, req):
+        ret = {'ret':'success', 'json':None}
+        if command == 'execute':
+            if arg1 == 'true':
+                self.start()
+            else:
+                self.stop()
         return jsonify(ret)
 
     def socketio_connect(self):
@@ -52,4 +61,5 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{self.P.package_name}/{self.name}')
+
 
