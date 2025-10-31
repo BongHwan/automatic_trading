@@ -1,53 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 
-{{ macros.m_button_group([['globalSettingSaveBtn', '설정 저장'], ['globalExecuteBtn', '실행']]) }}
+{{ macros.m_button_group([['globalSettingSaveBtn', '설정 저장']])}}
 {{ macros.m_row_start('5') }}
 {{ macros.m_row_end() }}
-
-<nav>
-  {{ macros.m_tab_head_start() }}
-    {{ macros.m_tab_head('normal', '기본', true) }}
-    {{ macros.m_tab_head('db', 'DB', false) }}
-  {{ macros.m_tab_head_end() }}
-</nav>
-
+{{ macros.m_hr() }}
 <form id='setting'>
-  <div class="tab-content" id="nav-tabContent">
-
-    {{ macros.m_tab_content_start('normal', true) }}
-      {{ macros.setting_input_text('user_id', 'ID', value=arg['user_id']) }}
-      {{ macros.setting_input_text('user_passwd', 'PW', value=arg['user_passwd'], type="password") }}
-      {{ macros.setting_input_int('trade_amount', '거래 기본 수량', value=arg['trade_amount']) }}
-      {{ macros.setting_input_int('leverage', '레버리지', value=arg['leverage']) }}
-      {{ macros.setting_input_int('take_profit', 'Take Profit (%)', value=arg['take_profit']) }}
-      {{ macros.setting_input_int('stop_loss', 'Stop Loss (%)', value=arg['stop_loss']) }}
-      {{ macros.setting_radio_with_value('trade_mode', '모드', [['simulation','시뮬레이션'],['real','실거래']], value=arg['trade_mode']) }}
-      {{ macros.setting_checkbox('telegram_enabled', '텔레그램 알림', value=arg['telegram_enabled'], desc=['On: 알림 전송']) }}
-      {{ macros.setting_input_text('telegram_api_key', 'Telegram API Key', value=arg['telegram_api_key']) }}
-      {{ macros.setting_input_text('telegram_chat_id', 'Telegram Chat ID', value=arg['telegram_chat_id']) }}
-    {{ macros.m_tab_content_end() }}
-
-    {{ macros.m_tab_content_start('db', false) }}
-      {{ macros.setting_input_text_and_buttons('db_delete_day', 'DB 삭제 기간', [['globalDbDeleteDayBtn', '기간 적용 삭제', [['tag_id','db_delete_day']]], ['globalDbDeleteBtn', '전체 삭제']], value=arg['db_delete_day']) }}
-      {{ macros.setting_checkbox('db_auto_delete', 'DB 자동 삭제', value=arg['db_auto_delete'], desc=['On : 기간 적용하여 DB를 자동 삭제합니다.']) }}
-    {{ macros.m_tab_content_end() }}
-
-  </div>
+{{ macros.setting_input_text('basic_bot_token', '봇 토큰', desc=None, value=arg['basic_bot_token']) }}
+{{ macros.m_hr() }}
+{{ macros.setting_checkbox('_status', '실행 상태', desc=None, value=arg['_status']) }}
+{{ macros.setting_checkbox('basic_auto_start', '시작시 자동실행', value=arg['basic_auto_start'], desc=None) }}
 </form>
 
 <script type="text/javascript">
-hideMenuModule();
 
-$("body").on('click', '#globalSettingSaveBtn', function(e){
-    e.preventDefault();
-    globalSendCommand('save_setting');
+$(document).ready(function(){
 });
 
-$("body").on('click', '#globalExecuteBtn', function(e){
-    e.preventDefault();
-    globalSendCommand('execute_trade');
+$("body").on('change', '#_status', function(e) {
+  e.preventDefault();
+  var ret = $(this).prop('checked');
+  globalSendCommand('execute', ret);
 });
 
-</script>
+</script>    
 {% endblock %}
