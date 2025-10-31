@@ -7,7 +7,7 @@ from .setup import *
 class ModuleMain(PluginModuleBase):
 
     def __init__(self, P):
-        super(ModuleBasic, self).__init__(P, name='basic', first_menu='setting', scheduler_desc='디스코드 봇 메시지 대기')
+        super(ModuleMain, self).__init__(P, name='basic', first_menu='setting', scheduler_desc='디스코드 봇 메시지 대기')
         self.db_default = {
             f'{self.name}_db_version' : '1',
             f'{self.name}_auto_start' : 'False',
@@ -30,6 +30,7 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{self.P.package_name}/{self.name}')
+
 
 
 
