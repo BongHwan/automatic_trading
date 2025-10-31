@@ -15,16 +15,16 @@
 <form id='setting'>
   <div class="tab-content" id="nav-tabContent">
     {{ macros.m_tab_content_start('normal', true) }}
-      {{ macros.setting_input_text('user_id', 'ID', value=arg['user_id']) }}
-      {{ macros.setting_input_text('user_passwd', 'PW', value=arg['user_passwd'], type="password") }}
+      {{ macros.setting_input_text('binance_api_key', 'Binance API Key', value=arg['binance_api_key']) }}
+      {{ macros.setting_input_text('binance_secret_key', 'Binance Secret Key', value=arg['binance_secret_key'], type="password") }}
       {{ macros.setting_input_int('trade_amount', '거래 기본 수량', value=arg['trade_amount']) }}
       {{ macros.setting_input_int('leverage', '레버리지', value=arg['leverage']) }}
       {{ macros.setting_input_int('take_profit', 'Take Profit (%)', value=arg['take_profit']) }}
       {{ macros.setting_input_int('stop_loss', 'Stop Loss (%)', value=arg['stop_loss']) }}
       {{ macros.setting_radio_with_value('trade_mode', '모드', [['simulation','시뮬레이션'],['real','실거래']], value=arg['trade_mode']) }}
       {{ macros.setting_checkbox('telegram_enabled', '텔레그램 알림', value=arg['telegram_enabled'], desc=['On: 알림 전송']) }}
-      {{ macros.setting_input_text('telegram_api_key', 'Telegram API Key', value=arg['telegram_api_key']) }}
-      {{ macros.setting_input_text('telegram_chat_id', 'Telegram Chat ID', value=arg['telegram_chat_id']) }}
+      {{ macros.setting_input_text('telegram_bot_token', 'Bot Token', value=arg['telegram_bot_token']) }}
+      {{ macros.setting_input_text('telegram_my_chat_id', 'My Chat ID', value=arg['telegram_my_chat_id']) }}
     {{ macros.m_tab_content_end() }}
     
     {{ macros.m_tab_content_start('db', false) }}
