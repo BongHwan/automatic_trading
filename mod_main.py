@@ -33,19 +33,9 @@ class ModuleMain(PluginModuleBase):
         if sub == 'setting':
             arg['_status'] = self.process != None
         return render_template('{package_name}_{module_name}_{sub}.html'.format(package_name=P.package_name, module_name=self.name, sub=sub), arg=arg)
-        except Exception:
-            return render_template("sample.html", title=f"{package_name} - {sub}")
             
     def plugin_load(self):
         pass
-
-    def process_menu(self, sub, req):
-        _ = req
-        try:
-            arg = ModelSetting.to_dict()
-            return render_template(f"{package_name}_{sub}.html", arg=arg)
-        except Exception:
-            return render_template("sample.html", title=f"{package_name} - {sub}")
 
     def process_command(self, command, arg1, arg2, arg3, req):
         ret = {'ret':'success', 'json':None}
@@ -61,5 +51,6 @@ class ModuleMain(PluginModuleBase):
 
     def send_data(self):
         F.socketio.emit("status", self.trade_data, namespace=f'/{self.P.package_name}/{self.name}')
+
 
 
