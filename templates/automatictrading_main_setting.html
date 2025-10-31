@@ -14,7 +14,6 @@
 
 <form id='setting'>
   <div class="tab-content" id="nav-tabContent">
-
     {{ macros.m_tab_content_start('normal', true) }}
       {{ macros.setting_input_text('user_id', 'ID', value=arg['user_id']) }}
       {{ macros.setting_input_text('user_passwd', 'PW', value=arg['user_passwd'], type="password") }}
@@ -27,17 +26,15 @@
       {{ macros.setting_input_text('telegram_api_key', 'Telegram API Key', value=arg['telegram_api_key']) }}
       {{ macros.setting_input_text('telegram_chat_id', 'Telegram Chat ID', value=arg['telegram_chat_id']) }}
     {{ macros.m_tab_content_end() }}
-
+    
     {{ macros.m_tab_content_start('db', false) }}
       {{ macros.setting_input_text_and_buttons('db_delete_day', 'DB 삭제 기간', [['globalDbDeleteDayBtn', '기간 적용 삭제', [['tag_id','db_delete_day']]], ['globalDbDeleteBtn', '전체 삭제']], value=arg['db_delete_day']) }}
       {{ macros.setting_checkbox('db_auto_delete', 'DB 자동 삭제', value=arg['db_auto_delete'], desc=['On : 기간 적용하여 DB를 자동 삭제합니다.']) }}
     {{ macros.m_tab_content_end() }}
-
   </div>
 </form>
 
 <script type="text/javascript">
-hideMenuModule();
 
 $("body").on('click', '#globalSettingSaveBtn', function(e){
     e.preventDefault();
